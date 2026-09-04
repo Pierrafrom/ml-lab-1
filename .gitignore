@@ -1,0 +1,9 @@
+# Visual Studio / MSBuild build artifacts — see rules/cpp/msvc-visual-studio.md
+bin/
+obj/
+.vs/
+*.user
+*.suo
+*.sdf
+*.opensdf
+ipch/

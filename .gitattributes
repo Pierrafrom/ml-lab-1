@@ -1,0 +1,12 @@
+# This is a Windows-only Visual Studio project (C++/CLI + WinForms) —
+# normalize everything to CRLF instead of the LF-first convention used
+# elsewhere in this course's tooling, since that's what Visual Studio
+# and MSBuild produce and expect natively on this stack.
+* text=auto eol=crlf
+
+# Datasets and binary assets — never let git touch line endings on these
+*.csv binary
+*.pdf binary
+*.png binary
+*.jpg binary
+*.ico binary
