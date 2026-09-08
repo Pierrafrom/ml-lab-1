@@ -48,7 +48,39 @@ std::vector<double> KNNClassifier::predict(const std::vector<std::vector<double>
 		--- Check if predicted label is valid
 	*/
 
-	//TODO
+	for (const auto& test_point : X_test) {
+		std::vector<std::pair<double, double>> distances; // Pair of distance and corresponding label
+		// Calculate distances to all training points
+		for (size_t i = 0; i < X_train_.size(); ++i) {
+			double dist = SimilarityFunctions::euclideanDistance(test_point, X_train_[i]);
+			// double dist = SimilarityFunctions::minkowskiDistance(test_point, X_train_[i], 2); // Using Minkowski distance with p=2 (Euclidean)
+			distances.emplace_back(dist, y_train_[i]);
+		}
+		// Sort distances to find the k nearest neighbors
+		std::sort(distances.begin(), distances.end(),
+			[](const std::pair<double, double>& a, const std::pair<double, double>& b) {
+				return a.first < b.first; // Sort by distance
+			});
+		// Count the frequency of labels among the k nearest neighbors
+		std::unordered_map<double, int> label_count;
+		for (int j = 0; j < k_ && j < distances.size(); ++j) {
+			label_count[distances[j].second]++;
+		}
+		// Find the label with the maximum count
+		double predicted_label = -1;
+		int max_count = 0;
+		for (const auto& pair : label_count) {
+			if (pair.second > max_count) {
+				max_count = pair.second;
+				predicted_label = pair.first;
+			}
+		}
+		// Check if predicted label is valid
+		if (predicted_label == -1) {
+			throw std::runtime_error("Error: Unable to determine predicted label.");
+		}
+		y_pred.push_back(predicted_label); // Store the predicted label
+	}
 
 	return y_pred; // Return vector of predicted labels for all test data points
 }
