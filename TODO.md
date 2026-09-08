@@ -1,44 +1,68 @@
-# TODO — Lab 1 task breakdown
+# TODO — Lab 1: k-NN
 
-Single source of truth for who implements what — update the checkbox when
-a branch is merged into `main`, don't track progress anywhere else.
+Source: [`Lab1_kNN.pdf`](Lab1_kNN.pdf) (course: DVA262). This is the actual
+Lab 1 assignment — **k-NN only**, split into Part 1 (Classification) and
+Part 2 (Regression). Everything else in the skeleton (Decision Trees,
+Linear/Logistic Regression, Clustering) belongs to **future labs with no
+assignment sheet yet** — see the bottom of this file, don't work on those
+now.
 
-Each algorithm has its own branch (created from `main`, already pushed).
-Workflow: checkout your branch → implement `fit`/`predict` (see the
-`/* Implement the following */` comments already in each `.cpp`) → test via
-the app (F5, load the matching dataset, run the algorithm, check the
-metrics panel) → commit → push → open a PR into `main` → the other person
-reviews before merging.
+## ⚠️ Dependency — read before starting
 
-## Now — KNN + Decision Trees
+`KNNRegression::predict()` (Maceo's Task 5) needs a working distance
+function to run at all, and `SimilarityFunctions.cpp` is shared by both of
+you. **Pierre should implement `euclideanDistance()` (Task 2) first and
+push/merge it to `main` before Maceo starts Task 5** — otherwise Maceo is
+blocked on an empty function. Everything else can happen in parallel.
 
-| # | Algorithm | Branch | Owner | Dataset to test with | Done |
-|---|---|---|---|---|---|
-| 1 | KNN Classifier | `feat/knn-classifier` | Pierre | `Iris.csv` | [ ] |
-| 2 | KNN Regression | `feat/knn-regression` | Maceo | `BostonHousing.csv` | [ ] |
-| 3 | Decision Tree Classification | `feat/decision-tree-classification` | Maceo | `Iris.csv` | [ ] |
-| 4 | Decision Tree Regression | `feat/decision-tree-regression` | Pierre | `BostonHousing.csv` | [ ] |
+## Part 1 — Classification (Pierre), branch `feat/knn-classifier`
 
-Each pair (1+2, 3+4) shares most of its logic (KNN classifier → KNN
-regression only changes the last step; decision tree classification →
-regression only changes the split criterion and leaf value) — since the
-two halves of each pair now belong to different people, compare notes
-with each other once you've both got your half working, it'll make
-finishing the other half faster.
+Files: `Classification/KNNClassifier.cpp`, `Utils/SimilarityFunctions.cpp`.
+`fit()` is already implemented (just stores the training data) — nothing
+to do there.
 
-## Later — deprioritized for now
+| Task | What | Done |
+|---|---|---|
+| 2 (do this first — see dependency above) | Implement `SimilarityFunctions::euclideanDistance()` | [ ] |
+| 1 | Implement `KNNClassifier::predict()` (loop test points → distance to every training point → majority vote among the k nearest → check `fit()` was called first) | [ ] |
+| 3 | Implement **one more** distance function in `SimilarityFunctions.cpp` (Manhattan is the simplest second choice), use it in `predict()` instead of Euclidean, compare the results | [ ] |
+| 4 | Try different values of `k` (set in `MainForm.cpp` where `KNNClassifier` is constructed) — note what breaks at the extremes (too small = noisy, too large = degenerates), be ready to discuss with the lab assistant | [ ] |
 
-Not started yet, revisit once the four above are done.
+Test with `Iris.csv`, Classification tab.
 
-| # | Algorithm | Branch | Owner (tentative) | Dataset to test with | Done |
-|---|---|---|---|---|---|
-| 5 | Linear Regression | `feat/linear-regression` | Maceo | `BostonHousing.csv` | [ ] |
-| 6 | Logistic Regression | `feat/logistic-regression` | Maceo | `Iris.csv` | [ ] |
-| 7 | KMeans | `feat/kmeans` | Maceo | `Iris.csv` | [ ] |
-| 8 | Fuzzy C-Means | `feat/fuzzy-cmeans` | Maceo | `Iris.csv` | [ ] |
+## Part 2 — Regression (Maceo), branch `feat/knn-regression`
 
-## Reference
+File: `Regression/KNNRegression.cpp`. `fit()` already implemented. No
+changes needed in `SimilarityFunctions.cpp` if Pierre's Task 2/3 are
+already merged into `main` — reuse those, don't reimplement.
 
-- Algorithm-by-algorithm guidance (what each `fit`/`predict` needs to do, without the implementation itself) — ask Claude Code, it has the full lab context in `CLAUDE.md`.
-- `ML_Lab_Project.pdf` — the actual assignment.
-- Utilities already implemented, reuse them rather than reimplementing: `SimilarityFunctions` (distances, for KNN), `EntropyFunctions` (entropy, for Decision Tree Classification's split), `DataPreprocessor::normalizeDataset`/`scaleDataset` (call in `KMeans::fit` before clustering), `Node` (tree node), `Metrics`, `PCADimensionalityReduction`.
+| Task | What | Done |
+|---|---|---|
+| 5 | Implement `KNNRegression::predict()` (same nearest-neighbor search as classification, but **average** the k neighbors' target values instead of voting) | [ ] |
+| 6 | Re-run using the Task 3 distance function (not just Euclidean) and show the result | [ ] |
+| 7 | Try different values of `k` (set in `MainForm.cpp` where `KNNRegression` is constructed), same discussion as Task 4 but for regression | [ ] |
+
+Test with `BostonHousing.csv`, Regression tab.
+
+## Optional — extra credit ("if you want to learn some more")
+
+Implement every remaining function in `SimilarityFunctions.cpp` (Hamming,
+Jaccard, Cosine, Minkowski), test all of them for both classification and
+regression, compare which performs best. Not required to pass the lab —
+only if there's time left after Tasks 1–7.
+
+## Demonstration
+
+Both parts must be demonstrated to a lab assistant together — plan to show
+both `feat/knn-classifier` and `feat/knn-regression` merged into `main`
+before booking a demo slot, not one half only.
+
+---
+
+## Future labs (same skeleton, no assignment sheet yet — do not start)
+
+Branches already exist for when the next lab statements arrive:
+`feat/decision-tree-classification`, `feat/decision-tree-regression`,
+`feat/linear-regression`, `feat/logistic-regression`, `feat/kmeans`,
+`feat/fuzzy-cmeans`. Nothing to implement on these until we get the actual
+lab PDF for them, the same way `Lab1_kNN.pdf` clarified this one.

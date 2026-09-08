@@ -2,11 +2,17 @@
 
 ## Project summary
 
-Machine Learning lab (Mälardalen University, `dva262`) — implementing
-classification, regression, and clustering algorithms from scratch in C++,
-inside a provided WinForms lab skeleton. The UI, data loading, and
-evaluation metrics are already implemented; the task is the training and
-prediction logic of each algorithm.
+Machine Learning lab (Mälardalen University, `dva262`) — implementing ML
+algorithms from scratch in C++, inside a shared WinForms skeleton used
+across every lab of the course. The UI, data loading, and evaluation
+metrics are already implemented.
+
+**Current assignment (see `TODO.md` and `Lab1_kNN.pdf`): Lab 1 is k-NN
+only** — `KNNClassifier::predict()`, `KNNRegression::predict()`, and two
+distance functions in `SimilarityFunctions.cpp`. Every other algorithm
+class described below (Decision Trees, Linear/Logistic Regression,
+Clustering) is scaffolding for a **future lab with no assignment sheet
+yet** — don't suggest implementing those until told otherwise.
 
 ## Tech stack
 
@@ -34,9 +40,9 @@ prediction logic of each algorithm.
 
 ```
 MachineLearningLab/MachineLearningLab/src/
-├── Classification/   # DecisionTreeClassification, KNNClassifier, LogisticRegression — to implement
-├── Regression/        # DecisionTreeRegression, KNNRegression, LinearRegression — to implement
-├── Clustering/         # KMeans, FuzzyCMeans — to implement
+├── Classification/   # KNNClassifier — Lab 1, to implement. DecisionTreeClassification, LogisticRegression — future lab, don't touch yet
+├── Regression/        # KNNRegression — Lab 1, to implement. DecisionTreeRegression, LinearRegression — future lab, don't touch yet
+├── Clustering/         # KMeans, FuzzyCMeans — future lab, don't touch yet
 ├── DataUtils/           # DataLoader, DataPreprocessor — already implemented
 ├── Evaluation/          # Metrics, KFoldCrossValidation — already implemented
 ├── Utils/                # PCADimensionalityReduction (implemented), EntropyFunctions, SimilarityFunctions, Node

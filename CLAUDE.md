@@ -4,12 +4,22 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Machine Learning lab project for Mälardalen University's ML course (see
-`ML_Lab_Project.pdf`). A C++/CLI WinForms application (`MachineLearningLab`)
-provides the UI (data loading, train/test split, algorithm selection,
-result visualization); the task across the labs is to implement the
-**training and prediction logic** of each ML algorithm from scratch — the UI
-glue, data loading, and evaluation metrics are already provided.
+Machine Learning lab project for Mälardalen University's ML course
+(DVA262). A C++/CLI WinForms application (`MachineLearningLab`) provides
+the UI (data loading, train/test split, algorithm selection, result
+visualization) shared across every lab in the course; each lab's task is
+to implement the **training and prediction logic** of specific ML
+algorithms from scratch — the UI glue, data loading, and evaluation
+metrics are already provided.
+
+`ML_Lab_Project.pdf` describes the whole skeleton (all algorithm classes
+it contains, across every lab). **The current, actual assignment is
+`Lab1_kNN.pdf` and `TODO.md`** — Lab 1 covers **k-NN only**
+(`KNNClassifier` + `KNNRegression` + `SimilarityFunctions`). Every other
+algorithm class in the skeleton (Decision Trees, Linear/Logistic
+Regression, Clustering) belongs to a future lab with no assignment sheet
+yet — don't implement those until a new lab PDF shows up, even though the
+classes and branches already exist.
 
 ## Build
 
@@ -54,10 +64,12 @@ public:
 - `Utils/PCADimensionalityReduction` — required as a preprocessing step in the Clustering lab specifically (per the lab PDF).
 - `MainForm.cpp/.h/.resx` — the WinForms UI; C++/CLI (`/clr`), not parseable by clangd/clang-tidy — edit via Visual Studio's designer, not by hand unless necessary.
 
-**To implement, per lab** (currently skeletons):
-- Classification: `DecisionTreeClassification`, `KNNClassifier`, `LogisticRegression`.
-- Regression: `DecisionTreeRegression`, `KNNRegression`, `LinearRegression`.
-- Clustering: `KMeans`, `FuzzyCMeans`.
+**To implement now (Lab 1 — see `TODO.md` for the exact task numbers)**:
+- `KNNClassifier::predict()` + `SimilarityFunctions::euclideanDistance()` and one more distance function.
+- `KNNRegression::predict()`, reusing the same `SimilarityFunctions`.
+
+**Not part of the current lab — skeletons only, don't touch until assigned**:
+`DecisionTreeClassification`, `DecisionTreeRegression`, `LogisticRegression`, `LinearRegression`, `KMeans`, `FuzzyCMeans`.
 
 ## Datasets
 
