@@ -21,7 +21,11 @@ using namespace System::Windows::Forms; // For MessageBox
 
 
 // KNNClassifier function: Constructor for KNNClassifier class. //
-KNNClassifier::KNNClassifier(int k) : k_(k) {}
+KNNClassifier::KNNClassifier(int k) : k_(k) {
+	if (k_ <= 0) {
+		throw std::invalid_argument("Error: k must be a positive integer.");
+	}
+}
 
 
 // fit function: Fits the KNNClassifier with the given training data.//
@@ -39,6 +43,12 @@ std::vector<double> KNNClassifier::predict(const std::vector<std::vector<double>
 	// Check if training data is empty
 	if (X_train_.empty() || y_train_.empty()) {
 		throw std::runtime_error("Error: Empty training data.");
+	}
+
+	// raise an exception if k_ is greater than the number of training samples
+	// (checked once here, not per test point -- X_train_.size() never changes)
+	if (static_cast<size_t>(k_) > X_train_.size()) {
+		throw std::runtime_error("Error: k is greater than the number of training samples.");
 	}
 
 	/* Implement the following:
@@ -63,7 +73,7 @@ std::vector<double> KNNClassifier::predict(const std::vector<std::vector<double>
 			});
 		// Count the frequency of labels among the k nearest neighbors
 		std::unordered_map<double, int> label_count;
-		for (int j = 0; j < k_ && j < distances.size(); ++j) {
+		for (int j = 0; j < k_; ++j) {
 			label_count[distances[j].second]++;
 		}
 		// Find the label with the maximum count
