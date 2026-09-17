@@ -7,6 +7,7 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#include <iterator>
 #include <unordered_map>
 #include <set>
 #include <numeric>
@@ -36,9 +37,13 @@ void DecisionTreeRegression::fit(std::vector<std::vector<double>>& X, std::vecto
 std::vector<double> DecisionTreeRegression::predict(std::vector<std::vector<double>>& X) {
 
 	std::vector<double> predictions;
-	
-	// Implement the function
-	// TODO
+	predictions.reserve(X.size());
+
+	// One traversal per test sample, always starting back at the tree's root.
+	for (std::vector<double>& x : X) {
+		predictions.push_back(traverseTree(x, root));
+	}
+
 	return predictions;
 }
 
@@ -56,11 +61,77 @@ Node* DecisionTreeRegression::growTree(std::vector<std::vector<double>>& X, std:
 		--- Find the best split threshold for the current feature.
 		--- grow the children that result from the split
 	*/
-	
-	// TODO
 
-	Node* left;
-	Node* right;
+	int n_samples = static_cast<int>(X.size());
+
+	// Stopping criteria checked before searching for a split: depth/sample-count
+	// limits must be enforced unconditionally or the recursion never ends.
+	if (depth >= max_depth || n_samples < min_samples_split) {
+		return new Node(0, 0.0, nullptr, nullptr, mean(y));
+	}
+
+	double best_gain = -1.0;
+
+	// Parent MSE, computed once per node
+	double y_mean = mean(y);
+	double parent_mse = 0.0;
+	for (double value : y) {
+		parent_mse += (value - y_mean) * (value - y_mean);
+	}
+	parent_mse /= n_samples;
+
+	// Loop through candidate features and potential split thresholds: same
+	// exhaustive search as DecisionTreeClassification
+	for (int feat_idx = 0; feat_idx < n_feats; ++feat_idx) {
+		std::vector<double> X_column;
+		X_column.reserve(n_samples);
+		for (int i = 0; i < n_samples; ++i) {
+			X_column.push_back(X[i][feat_idx]);
+		}
+
+		std::set<double> thresholds(X_column.begin(), X_column.end());
+
+		// The largest value in the column would put every sample on the left
+		// (right empty) -- skip it. meanSquaredError has no way to flag "this
+		// split is degenerate" without returning a sentinel/infinity, which we
+		// specifically don't want, so growTree guarantees up front that it's
+		// never even asked to evaluate that case.
+		for (auto it = thresholds.begin(); it != std::prev(thresholds.end()); ++it) {
+			double threshold = *it;
+			// meanSquaredError returns the split's own (weighted, child) MSE --
+			// the gain is computed here.
+			double split_mse = meanSquaredError(y, X_column, threshold);
+			double gain = parent_mse - split_mse;
+			if (gain > best_gain) {
+				best_gain = gain;
+				split_idx = feat_idx;
+				split_thresh = threshold;
+			}
+		}
+	}
+
+	// No candidate reduced the parent's MSE (e.g. every remaining sample is
+	// identical across all features) -- nothing left to split on.
+	if (split_idx == -1) {
+		return new Node(0, 0.0, nullptr, nullptr, mean(y));
+	}
+
+	// Partition the samples using the winning (feature, threshold) pair --
+	// same "<= goes left" convention traverseTree must use at prediction time.
+	std::vector<std::vector<double>> X_left, X_right;
+	std::vector<double> y_left, y_right;
+	for (int i = 0; i < n_samples; ++i) {
+		if (X[i][split_idx] <= split_thresh) {
+			X_left.push_back(X[i]);
+			y_left.push_back(y[i]);
+		} else {
+			X_right.push_back(X[i]);
+			y_right.push_back(y[i]);
+		}
+	}
+
+	Node* left = growTree(X_left, y_left, depth + 1); // grow the left tree
+	Node* right = growTree(X_right, y_right, depth + 1); // grow the right tree
 	return new Node(split_idx, split_thresh, left, right); // return a new node with the split index, split threshold, left tree, and right tree
 }
 
@@ -69,10 +140,39 @@ Node* DecisionTreeRegression::growTree(std::vector<std::vector<double>>& X, std:
 double DecisionTreeRegression::meanSquaredError(std::vector<double>& y, std::vector<double>& X_column, double split_thresh) {
 
 	double mse = 0.0;
-	
-	// Calculate the mse
-	// TODO
-	
+
+	// Calculate the mse: generate the split first, same "<= goes left"
+	// convention growTree partitions with.
+	std::vector<double> y_left, y_right;
+	for (int i = 0; i < static_cast<int>(X_column.size()); ++i) {
+		if (X_column[i] <= split_thresh) {
+			y_left.push_back(y[i]);
+		} else {
+			y_right.push_back(y[i]);
+		}
+	}
+
+	// Weighted average of each side's own MSE -- MSE of a set is its own
+	// variance: the average squared distance to its own mean.
+	int n_samples = static_cast<int>(y.size());
+
+	double left_mean = mean(y_left);
+	double left_mse = 0.0;
+	for (double value : y_left) {
+		left_mse += (value - left_mean) * (value - left_mean);
+	}
+	left_mse /= y_left.size();
+
+	double right_mean = mean(y_right);
+	double right_mse = 0.0;
+	for (double value : y_right) {
+		right_mse += (value - right_mean) * (value - right_mean);
+	}
+	right_mse /= y_right.size();
+
+	mse = (static_cast<double>(y_left.size()) / n_samples) * left_mse +
+		(static_cast<double>(y_right.size()) / n_samples) * right_mse;
+
 	return mse;
 }
 
@@ -80,10 +180,14 @@ double DecisionTreeRegression::meanSquaredError(std::vector<double>& y, std::vec
 double DecisionTreeRegression::mean(std::vector<double>& values) {
 
 	double meanValue = 0.0;
-	
+
 	// calculate the mean
-	// TODO
-	
+	double sum = 0.0;
+	for (double value : values) {
+		sum += value;
+	}
+	meanValue = sum / static_cast<double>(values.size());
+
 	return meanValue;
 }
 
@@ -95,9 +199,18 @@ double DecisionTreeRegression::traverseTree(std::vector<double>& x, Node* node) 
 		--- If the feature value of the input vector is less than or equal to the node's threshold, traverse the left subtree
 		--- Otherwise, traverse the right subtree
 	*/
-	// TODO
 
-	return 0.0;
+	// Leaf node: no decision left to make, its value IS the prediction.
+	if (node->isLeafNode()) {
+		return node->value;
+	}
+
+	// Same "<= goes left" convention growTree used to build the split --
+	// must match exactly, or predictions silently diverge from training.
+	if (x[node->feature] <= node->threshold) {
+		return traverseTree(x, node->left);
+	}
+	return traverseTree(x, node->right);
 }
 
 
