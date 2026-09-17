@@ -13,13 +13,14 @@ algorithms from scratch — the UI glue, data loading, and evaluation
 metrics are already provided.
 
 `ML_Lab_Project.pdf` describes the whole skeleton (all algorithm classes
-it contains, across every lab). **The current, actual assignment is
-`Lab1_kNN.pdf` and `TODO.md`** — Lab 1 covers **k-NN only**
-(`KNNClassifier` + `KNNRegression` + `SimilarityFunctions`). Every other
-algorithm class in the skeleton (Decision Trees, Linear/Logistic
-Regression, Clustering) belongs to a future lab with no assignment sheet
-yet — don't implement those until a new lab PDF shows up, even though the
-classes and branches already exist.
+it contains, across every lab). **Lab 1** (`Lab1_kNN.pdf`) covered
+**k-NN only** (`KNNClassifier` + `KNNRegression` + `SimilarityFunctions`)
+and is done. **Lab 2** (`Lab2_Decision_Tree.pdf`) is the current
+assignment — **Decision Trees only**
+(`DecisionTreeClassification` + `DecisionTreeRegression`). Linear/Logistic
+Regression and Clustering still belong to a future lab with no assignment
+sheet yet — don't implement those until a new lab PDF shows up, even
+though the classes and branches already exist.
 
 ## Build
 
@@ -64,12 +65,18 @@ public:
 - `Utils/PCADimensionalityReduction` — required as a preprocessing step in the Clustering lab specifically (per the lab PDF).
 - `MainForm.cpp/.h/.resx` — the WinForms UI; C++/CLI (`/clr`), not parseable by clangd/clang-tidy — edit via Visual Studio's designer, not by hand unless necessary.
 
-**To implement now (Lab 1 — see `TODO.md` for the exact task numbers)**:
-- `KNNClassifier::predict()` + `SimilarityFunctions::euclideanDistance()` and one more distance function.
-- `KNNRegression::predict()`, reusing the same `SimilarityFunctions`.
+**Done (Lab 1)**: `KNNClassifier::predict()`, `KNNRegression::predict()`,
+`SimilarityFunctions::euclideanDistance()`/`manhattanDistance()`.
+
+**To implement now (Lab 2 — see `TODO.md` for the exact task numbers)**:
+- `DecisionTreeClassification`: `EntropyFunctions::entropy()` (both
+  overloads), `growTree()` (done — see `feat/decision-tree-classification`),
+  `informationGain()`, `mostCommonlLabel()`, `predict()`, `traverseTree()`.
+- `DecisionTreeRegression`: the analogous set, with a variance/MSE split
+  criterion instead of entropy and a mean instead of a majority vote.
 
 **Not part of the current lab — skeletons only, don't touch until assigned**:
-`DecisionTreeClassification`, `DecisionTreeRegression`, `LogisticRegression`, `LinearRegression`, `KMeans`, `FuzzyCMeans`.
+`LogisticRegression`, `LinearRegression`, `KMeans`, `FuzzyCMeans`.
 
 ## Datasets
 
