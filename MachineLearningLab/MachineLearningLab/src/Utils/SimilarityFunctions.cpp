@@ -62,8 +62,11 @@ double SimilarityFunctions::euclideanDistance(const std::vector<double>& a, cons
 	double dist = 0.0;
 	
 	// Compute the Euclidean Distance
-	// TODO
-	
+	for (size_t i = 0; i < a.size(); ++i) {
+		dist += std::pow(a[i] - b[i], 2);
+	}
+	// we avoid using sqrt for performance reasons
+	// dist = std::sqrt(dist); 
 
 	return dist;
 }
@@ -77,7 +80,9 @@ double SimilarityFunctions::manhattanDistance(const std::vector<double>& a, cons
 	double dist = 0.0;
 	
 	// Compute the Manhattan Distance
-	// TODO
+	for (size_t i = 0; i < a.size(); ++i) {
+		dist += std::abs(a[i] - b[i]);
+	}
 
 	return dist;
 }
@@ -90,8 +95,10 @@ double SimilarityFunctions::minkowskiDistance(const std::vector<double>& a, cons
 	double dist = 0.0;
 	
 	// Compute the Minkowski Distance
-	// TODO
-	
+	for (size_t i = 0; i < a.size(); ++i) {
+		dist += std::pow(std::abs(a[i] - b[i]), p);
+	}
+	dist = std::pow(dist, 1.0 / p);
 
 	return dist;
 }

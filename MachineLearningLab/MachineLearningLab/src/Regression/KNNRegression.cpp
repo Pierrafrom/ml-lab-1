@@ -20,8 +20,12 @@ using namespace System::Windows::Forms; // For MessageBox
                                                 ///  KNNRegression class implementation  ///
 
 
-/// KNNRegression function: Constructor for KNNRegression class, initializing the number of neighbors to use for prediction./// 
-KNNRegression::KNNRegression(int k) : k_(k) {}
+/// KNNRegression function: Constructor for KNNRegression class, initializing the number of neighbors to use for prediction.///
+KNNRegression::KNNRegression(int k) : k_(k) {
+	if (k_ <= 0) {
+		throw std::invalid_argument("Error: k must be a positive integer.");
+	}
+}
 
 
 /// fit function: Fits the KNNRegression model with the given training data. ///
@@ -42,6 +46,12 @@ std::vector<double> KNNRegression::predict(const std::vector<std::vector<double>
 		throw std::runtime_error("Error: Empty training data.");
 	}
 
+	// raise an exception if k_ is greater than the number of training samples
+	// (checked once here, not per test point -- X_train_.size() never changes)
+	if (static_cast<size_t>(k_) > X_train_.size()) {
+		throw std::runtime_error("Error: k is greater than the number of training samples.");
+	}
+
 	/* Implement the following:
 		--- Loop through each test data point
 		--- Calculate Euclidean distance between test data point and each training data point
@@ -49,9 +59,28 @@ std::vector<double> KNNRegression::predict(const std::vector<std::vector<double>
 		--- Store sum of y_train values for k-nearest neighbors
 		--- Calculate average of y_train values for k-nearest neighbors
 	*/
-	
-	//TODO
 
+	for (const auto& test_point : X_test) {
+		std::vector<std::pair<double, double>> distances; // Pair of distance and corresponding label
+		// Calculate distances to all training points
+		for (size_t i = 0; i < X_train_.size(); ++i) {
+			// double dist = SimilarityFunctions::euclideanDistance(test_point, X_train_[i]);
+			double dist = SimilarityFunctions::manhattanDistance(test_point, X_train_[i]);
+			distances.emplace_back(dist, y_train_[i]);
+		}
+		// Sort distances to find the k nearest neighbors
+		std::sort(distances.begin(), distances.end(),
+			[](const std::pair<double, double>& a, const std::pair<double, double>& b) {
+				return a.first < b.first; // Sort by distance
+			});
+		// Calculate the average of the labels among the k nearest neighbors
+		double sum = 0.0;
+		for (int j = 0; j < k_; ++j) {
+			sum += distances[j].second; // Sum the labels of the k nearest neighbors
+		}
+		double average = sum / k_; // Calculate average
+		y_pred.push_back(average); // Store the predicted value
+	}
 
 	return y_pred; // Return vector of predicted values for all test data points
 }
