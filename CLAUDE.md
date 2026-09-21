@@ -85,4 +85,4 @@ public:
 
 ## Dependencies
 
-- **Eigen 3.4.0**, vendored at `AdditionalLibraries/eigen-3.4.0/` (trimmed to `Eigen/` + `unsupported/` only — bench/test/doc/ci/demos/lapack/blas were dropped, they're not needed to build). Referenced via `$(ProjectDir)..\..\AdditionalLibraries\eigen-3.4.0` in the `.vcxproj` (relative, so it works regardless of where each teammate clones the repo — the skeleton originally hardcoded an absolute path that only existed on the original author's machine).
+- **Eigen 3.4.0**, vendored at `AdditionalLibraries/eigen-3.4.0/` (trimmed to `Eigen/` only — `unsupported/`, bench/test/doc/ci/demos/lapack/blas were all dropped, none of it is `#include`d by this project). Referenced via `$(ProjectDir)..\..\AdditionalLibraries\eigen-3.4.0` in the `.vcxproj` (relative, so it works regardless of where each teammate clones the repo — the skeleton originally hardcoded an absolute path that only existed on the original author's machine).
