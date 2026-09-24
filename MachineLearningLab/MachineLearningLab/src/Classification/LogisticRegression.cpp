@@ -14,6 +14,7 @@
 #include <map>
 #include <random>
 #include <unordered_map> 
+#include <cstdlib>
 
 using namespace System::Windows::Forms; // For MessageBox
 
@@ -21,42 +22,112 @@ using namespace System::Windows::Forms; // For MessageBox
                                             ///  LogisticRegression class implementation  ///
 // Constractor
 
-LogisticRegression::LogisticRegression(double learning_rate, int num_epochs)
-    : learning_rate(learning_rate), num_epochs(num_epochs) {}
+LogisticRegression::LogisticRegression(double learning_rate, int nb_rounds)
+    : learning_rate(learning_rate), nb_rounds(nb_rounds) {}
 
 // Fit method for training the logistic regression model
 void LogisticRegression::fit(const std::vector<std::vector<double>>& X_train, const std::vector<double>& y_train) {
     int num_features = X_train[0].size();
-    int num_classes = std::set<double>(y_train.begin(), y_train.end()).size();
 
+    // List the different labels found in the dataset (1, 2 and 3 for Iris)
+    class_labels.clear();
+    for (size_t i = 0; i < y_train.size(); i++) {
+        bool already_found = false;
+        for (size_t k = 0; k < class_labels.size(); k++) {
+            if (class_labels[k] == y_train[i]) {
+                already_found = true;
+            }
+        }
+        if (!already_found) {
+            class_labels.push_back(y_train[i]);
+        }
+    }
 
-	/* Implement the following:
-       	--- Initialize weights for each class
-    	--- Loop over each class label
-    	--- Convert the problem into a binary classification problem
-        --- Loop over training epochs
-       	--- Add bias term to the training example
-    	--- Calculate weighted sum of features
-        --- Calculate the sigmoid of the weighted sum
-        --- Update weights using gradient descent
-    */
-    
-    // TODO
+    int num_classes = class_labels.size();
+
+    // One row of weights per class: one weight per feature, plus one for the bias
+    weights.clear();
+    for (int c = 0; c < num_classes; c++) {
+        std::vector<double> row;
+        for (int j = 0; j < num_features + 1; j++) {
+            double random_weight = ((double)rand() / RAND_MAX - 0.5) * 0.02;
+            row.push_back(random_weight);
+        }
+        weights.push_back(row);
+    }
+
+    // Train one binary classifier per class
+    for (int c = 0; c < num_classes; c++) {
+
+        for (int round = 0; round < nb_rounds; round++) {
+
+            for (size_t i = 0; i < X_train.size(); i++) {
+
+                // Add the bias term in front of the features
+                std::vector<double> x;
+                x.push_back(1.0);
+                for (int j = 0; j < num_features; j++) {
+                    x.push_back(X_train[i][j]);
+                }
+
+                // The answer is 1 for the current class, 0 for the others
+                double target = 0.0;
+                if (y_train[i] == class_labels[c]) {
+                    target = 1.0;
+                }
+
+                // Weighted sum of the features
+                double z = 0.0;
+                for (int j = 0; j < num_features + 1; j++) {
+                    z += weights[c][j] * x[j];
+                }
+
+                double prediction = sigmoid(z);
+                double error = prediction - target;
+
+                // Gradient descent update
+                for (int j = 0; j < num_features + 1; j++) {
+                    weights[c][j] -= learning_rate * error * x[j];
+                }
+            }
+        }
+    }
 }
 
 // Predict method to predict class labels for test data
 std::vector<double> LogisticRegression::predict(const std::vector<std::vector<double>>& X_test) {
     std::vector<double> predictions;
-    
-    /* Implement the following:
-    	--- Loop over each test example
-        --- Add bias term to the test example
-        --- Calculate scores for each class by computing the weighted sum of features
-        --- Predict class label with the highest score
-    */
-      
-    // TODO
-    
+
+    for (size_t i = 0; i < X_test.size(); i++) {
+
+        // Add the bias term, exactly like in fit()
+        std::vector<double> x;
+        x.push_back(1.0);
+        for (size_t j = 0; j < X_test[i].size(); j++) {
+            x.push_back(X_test[i][j]);
+        }
+
+        // One score per class
+        std::vector<double> scores;
+        for (size_t c = 0; c < weights.size(); c++) {
+            double z = 0.0;
+            for (size_t j = 0; j < x.size(); j++) {
+                z += weights[c][j] * x[j];
+            }
+            scores.push_back(z);
+        }
+
+        // Keep the class with the highest score
+        size_t best_class = 0;
+        for (size_t c = 1; c < scores.size(); c++) {
+            if (scores[c] > scores[best_class]) {
+                best_class = c;
+            }
+        }
+
+        predictions.push_back(class_labels[best_class]);
+    }
+
     return predictions;
 }
 
