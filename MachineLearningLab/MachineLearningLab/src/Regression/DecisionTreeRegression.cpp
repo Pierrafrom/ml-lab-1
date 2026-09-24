@@ -90,12 +90,6 @@ Node* DecisionTreeRegression::growTree(std::vector<std::vector<double>>& X, std:
 		}
 
 		std::set<double> thresholds(X_column.begin(), X_column.end());
-
-		// The largest value in the column would put every sample on the left
-		// (right empty) -- skip it. meanSquaredError has no way to flag "this
-		// split is degenerate" without returning a sentinel/infinity, which we
-		// specifically don't want, so growTree guarantees up front that it's
-		// never even asked to evaluate that case.
 		for (auto it = thresholds.begin(); it != std::prev(thresholds.end()); ++it) {
 			double threshold = *it;
 			// meanSquaredError returns the split's own (weighted, child) MSE --

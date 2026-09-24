@@ -13,14 +13,13 @@ algorithms from scratch — the UI glue, data loading, and evaluation
 metrics are already provided.
 
 `ML_Lab_Project.pdf` describes the whole skeleton (all algorithm classes
-it contains, across every lab). **Lab 1** (`Lab1_kNN.pdf`) covered
-**k-NN only** (`KNNClassifier` + `KNNRegression` + `SimilarityFunctions`)
-and is done. **Lab 2** (`Lab2_Decision_Tree.pdf`) is the current
-assignment — **Decision Trees only**
-(`DecisionTreeClassification` + `DecisionTreeRegression`). Linear/Logistic
-Regression and Clustering still belong to a future lab with no assignment
-sheet yet — don't implement those until a new lab PDF shows up, even
-though the classes and branches already exist.
+it contains, across every lab). **Lab 1** (`Lab1_kNN.pdf`, k-NN —
+`KNNClassifier` + `KNNRegression` + `SimilarityFunctions`) and **Lab 2**
+(`Lab2_Decision_Tree.pdf`, Decision Trees —
+`DecisionTreeClassification` + `DecisionTreeRegression`) are both done.
+Linear/Logistic Regression and Clustering still belong to a future lab
+with no assignment sheet yet — don't implement those until a new lab PDF
+shows up, even though the classes and branches already exist.
 
 ## Build
 
@@ -65,15 +64,21 @@ public:
 - `Utils/PCADimensionalityReduction` — required as a preprocessing step in the Clustering lab specifically (per the lab PDF).
 - `MainForm.cpp/.h/.resx` — the WinForms UI; C++/CLI (`/clr`), not parseable by clangd/clang-tidy — edit via Visual Studio's designer, not by hand unless necessary.
 
-**Done (Lab 1)**: `KNNClassifier::predict()`, `KNNRegression::predict()`,
+**Done (Lab 1 — k-NN)**: `KNNClassifier::predict()`, `KNNRegression::predict()`,
 `SimilarityFunctions::euclideanDistance()`/`manhattanDistance()`.
 
-**To implement now (Lab 2 — see `TODO.md` for the exact task numbers)**:
+**Done (Lab 2 — Decision Trees)**:
 - `DecisionTreeClassification`: `EntropyFunctions::entropy()` (both
-  overloads), `growTree()` (done — see `feat/decision-tree-classification`),
-  `informationGain()`, `mostCommonlLabel()`, `predict()`, `traverseTree()`.
-- `DecisionTreeRegression`: the analogous set, with a variance/MSE split
-  criterion instead of entropy and a mean instead of a majority vote.
+  overloads), `growTree()`, `informationGain()`, `mostCommonlLabel()`,
+  `predict()`, `traverseTree()`.
+- `DecisionTreeRegression`: `growTree()`, `meanSquaredError()`, `mean()`,
+  `predict()`, `traverseTree()`.
+- Both classes' constructor defaults are tuned to their empirically best
+  hyperparameters (see `notebooks/iris_exploration.ipynb` and
+  `notebooks/boston_housing_exploration.ipynb` for the sweeps):
+  `DecisionTreeClassification(10, 3, 4)`,
+  `DecisionTreeRegression(6, 8, 13)` — not the skeleton's original
+  `(2, 100, 0)`.
 
 **Not part of the current lab — skeletons only, don't touch until assigned**:
 `LogisticRegression`, `LinearRegression`, `KMeans`, `FuzzyCMeans`.
