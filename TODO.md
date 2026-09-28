@@ -1,68 +1,65 @@
-# TODO — Lab 1: k-NN
+# TODO — Lab 4: Linear Regression
 
-Source: [`Lab1_kNN.pdf`](Lab1_kNN.pdf) (course: DVA262). This is the actual
-Lab 1 assignment — **k-NN only**, split into Part 1 (Classification) and
-Part 2 (Regression). Everything else in the skeleton (Decision Trees,
-Linear/Logistic Regression, Clustering) belongs to **future labs with no
-assignment sheet yet** — see the bottom of this file, don't work on those
-now.
+Source: [`Lab4_Linear_Regression.pdf`](Lab4_Linear_Regression.pdf) (course:
+DVA262). **Lab 4 is the current assignment** — Linear Regression only, one
+part (regression, `BostonHousing.csv`). Labs 1-3 are done (see below).
+Clustering (`KMeans`, `FuzzyCMeans`) still belongs to a future lab with no
+assignment sheet yet.
 
-## ⚠️ Dependency — read before starting
+## Files
 
-`KNNRegression::predict()` (Maceo's Task 5) needs a working distance
-function to run at all, and `SimilarityFunctions.cpp` is shared by both of
-you. **Pierre should implement `euclideanDistance()` (Task 2) first and
-push/merge it to `main` before Maceo starts Task 5** — otherwise Maceo is
-blocked on an empty function. Everything else can happen in parallel.
+`Regression/LinearRegression.cpp`/`.h`. Currently only one `fit()`/
+`predict()` pair exists (Matrix Form, both still `//TODO`) — Task 2 requires
+**adding a second, overloaded `fit()`/`predict()` pair** for Gradient
+Descent, not just filling in a stub. `m_coefficients` (`Eigen::VectorXd`)
+is the only member declared so far; Task 2 will need `learning_rate`/
+`num_epochs` added too (same pattern as `LogisticRegression`).
 
-## Part 1 — Classification (Pierre), branch `feat/knn-classifier`
-
-Files: `Classification/KNNClassifier.cpp`, `Utils/SimilarityFunctions.cpp`.
-`fit()` is already implemented (just stores the training data) — nothing
-to do there.
+## Tasks
 
 | Task | What | Done |
 |---|---|---|
-| 2 (do this first — see dependency above) | Implement `SimilarityFunctions::euclideanDistance()` | [ ] |
-| 1 | Implement `KNNClassifier::predict()` (loop test points → distance to every training point → majority vote among the k nearest → check `fit()` was called first) | [ ] |
-| 3 | Implement **one more** distance function in `SimilarityFunctions.cpp` (Manhattan is the simplest second choice), use it in `predict()` instead of Euclidean, compare the results | [ ] |
-| 4 | Try different values of `k` (set in `MainForm.cpp` where `KNNClassifier` is constructed) — note what breaks at the extremes (too small = noisy, too large = degenerates), be ready to discuss with the lab assistant | [ ] |
+| 1 | Implement `fit()`/`predict()` using the **Matrix Form** (normal equation `θ̂ = (XᵀX)⁻¹Xᵀy`, via Eigen) | [ ] |
+| 2 | Add an **overloaded** `fit()`/`predict()` pair using **Gradient Descent** — same structure as `LogisticRegression::fit()` (bias trick, weighted sum, gradient, update loop), but no sigmoid: `h(x) = θᵀx` directly, not `σ(θᵀx)` | [ ] |
+| 3 | Discussion (no code): differences between Matrix Form and Gradient Descent — which is faster, which predicts better. Be ready to discuss with the lab assistant | [ ] |
+| 4 | Same hyperparameter sweep pattern as Lab 2/3: try different `learning_rate`/`num_epochs` for the Gradient Descent version, find the best combo (see `notebooks/` for how we did this for Lab 2/3) | [ ] |
 
-Test with `Iris.csv`, Classification tab.
+**Open question, not yet decided**: unlike Lab 1 (naturally split into
+Classification/Regression), Lab 4 has a single part — no obvious way to
+split Task 1 (Matrix Form) and Task 2 (Gradient Descent) between two
+people without one blocking the other on the same file. Decide together
+before starting (e.g. one person does Task 1 while the other reads up on
+Task 2, or split by branch and merge).
 
-## Part 2 — Regression (Maceo), branch `feat/knn-regression`
-
-File: `Regression/KNNRegression.cpp`. `fit()` already implemented. No
-changes needed in `SimilarityFunctions.cpp` if Pierre's Task 2/3 are
-already merged into `main` — reuse those, don't reimplement.
-
-| Task | What | Done |
-|---|---|---|
-| 5 | Implement `KNNRegression::predict()` (same nearest-neighbor search as classification, but **average** the k neighbors' target values instead of voting) | [ ] |
-| 6 | Re-run using the Task 3 distance function (not just Euclidean) and show the result | [ ] |
-| 7 | Try different values of `k` (set in `MainForm.cpp` where `KNNRegression` is constructed), same discussion as Task 4 but for regression | [ ] |
-
-Test with `BostonHousing.csv`, Regression tab.
-
-## Optional — extra credit ("if you want to learn some more")
-
-Implement every remaining function in `SimilarityFunctions.cpp` (Hamming,
-Jaccard, Cosine, Minkowski), test all of them for both classification and
-regression, compare which performs best. Not required to pass the lab —
-only if there's time left after Tasks 1–7.
+**Also open**: `runLinearRegression()` currently calls a single `fit()`/
+`predict()`. Once two overloaded pairs exist, `MainForm.h` will need some
+way to let the user pick Matrix Form vs Gradient Descent (the PDF says
+"you may need to edit some parts of the code... to display the results
+correctly") — not designed yet.
 
 ## Demonstration
 
-Both parts must be demonstrated to a lab assistant together — plan to show
-both `feat/knn-classifier` and `feat/knn-regression` merged into `main`
-before booking a demo slot, not one half only.
+Both Task 1 (Matrix Form) and Task 2 (Gradient Descent) must be
+demonstrated, plus the Task 3/4 discussion.
 
 ---
 
-## Future labs (same skeleton, no assignment sheet yet — do not start)
+## Done
 
-Branches already exist for when the next lab statements arrive:
-`feat/decision-tree-classification`, `feat/decision-tree-regression`,
-`feat/linear-regression`, `feat/logistic-regression`, `feat/kmeans`,
-`feat/fuzzy-cmeans`. Nothing to implement on these until we get the actual
-lab PDF for them, the same way `Lab1_kNN.pdf` clarified this one.
+- **Lab 1 — k-NN** (`Lab1_kNN.pdf`): `KNNClassifier`, `KNNRegression`,
+  `SimilarityFunctions` (Euclidean + Manhattan). Merged into `main`.
+- **Lab 2 — Decision Trees** (`Lab2_Decision_Tree.pdf`):
+  `DecisionTreeClassification`, `DecisionTreeRegression`,
+  `EntropyFunctions`. Defaults tuned to their empirically best
+  hyperparameters (see `notebooks/iris_exploration.ipynb` and
+  `notebooks/boston_housing_exploration.ipynb`). Merged into `main`.
+- **Lab 3 — Logistic Regression** (`Lab3_Logistics Regression.pdf`):
+  `LogisticRegression` (One-vs-Rest, gradient descent per class).
+  Defaults tuned (`learning_rate=0.001`, `nb_rounds=1000`). Merged into
+  `main`.
+
+## Future labs (no assignment sheet yet — do not start)
+
+`KMeans`, `FuzzyCMeans` (Clustering). Branches `feat/kmeans`,
+`feat/fuzzy-cmeans` already exist, kept up to date with `main`. Nothing to
+implement until the actual lab PDF arrives.
