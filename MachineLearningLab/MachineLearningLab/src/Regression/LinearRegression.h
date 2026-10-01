@@ -26,6 +26,8 @@ public:
 private:
 
     Eigen::VectorXd m_coefficients; // Store the coefficients for future predictions
+    Eigen::VectorXd m_featureMean;  // mean of the 13 features
+    Eigen::VectorXd m_featureSD;    // sd of the 13 features
 
 };
 

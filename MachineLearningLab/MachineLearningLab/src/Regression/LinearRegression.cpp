@@ -68,6 +68,30 @@ void LinearRegression::fit(const std::vector<std::vector<double>>& trainData, co
 // Function to fit with the GradienDescent method
 void LinearRegression::fit(const std::vector<std::vector<double>>& trainData, const std::vector<double>& trainLabels, double learning_rate, int nb_rounds) {
     int num_features = trainData[0].size();
+    int n = trainData.size();
+    m_featureMean = Eigen::VectorXd(num_features); //init the size at 13
+    m_featureSD = Eigen::VectorXd(num_features); 
+    
+    // Calculation of the mean for each features
+    for (int j = 0; j < num_features; j++) {
+        double somme = 0.0;
+        for (int i = 0; i < n; i++) {
+            somme += trainData[i][j];
+        }
+        m_featureMean[j] = somme / n;
+    }
+
+    // Calculation of the SD for each features
+    for (int j = 0; j < num_features; j++) {
+        double somme_square = 0.0;
+        for (int i = 0; i < n; i++) {
+            double diff = trainData[i][j] - m_featureMean[j];
+            somme_square += diff * diff;
+        }
+        double sd = std::sqrt(somme_square / n);
+        if (sd == 0) { sd = 1.0; }  // if the column doesn't vary
+        m_featureSD[j] = sd;
+    }
 
     Eigen::VectorXd weights(num_features + 1);
 	for (int i = 0; i < num_features + 1; i++) {
@@ -82,7 +106,8 @@ void LinearRegression::fit(const std::vector<std::vector<double>>& trainData, co
             std::vector<double> x;
             x.push_back(1.0);
             for (int j = 0; j < num_features; j++) {
-                x.push_back(trainData[i][j]);
+                double normalized = (trainData[i][j] - m_featureMean[j]) / m_featureSD[j];
+                x.push_back(normalized);
             }
             double prediction = 0.0;
             for (int j = 0; j < num_features + 1; j++) {
@@ -119,11 +144,19 @@ std::vector<double> LinearRegression::predict(const std::vector<std::vector<doub
 		throw std::runtime_error("Model has not been fitted yet.");
 	}
 
+    bool isNormalized = (m_featureSD.size() > 0); // Are we using the fit with gradient descent ?
+
 	Eigen::MatrixXd X(static_cast <int>(testData.size()), static_cast <int>(testData[0].size() + 1));
 	for (size_t i = 0; i < testData.size(); ++i) {
 		X(i, 0) = 1.0; // Bias term
 		for (size_t j = 0; j < testData[i].size(); ++j) {
-			X(i, j + 1) = testData[i][j];
+            if (isNormalized) {
+                X(i, j + 1) = (testData[i][j] - m_featureMean[j]) / m_featureSD[j];
+            }
+            else {
+                X(i, j + 1) = testData[i][j];
+            }
+
 		}
 	}
 
@@ -200,7 +233,7 @@ std::tuple<double, double, double, double, double, double,
         DataPreprocessor::splitDataset(dataset, trainRatio, trainData, trainLabels, testData, testLabels);
 
         // Fit the model to the training data
-        fit(trainData, trainLabels);
+        fit(trainData, trainLabels, 0.0005, 100); // avec 0.0005 et 100 on a un peu mieux qu'avec le premier fit
 
         // Make predictions on the test data
         std::vector<double> testPredictions = predict(testData);
