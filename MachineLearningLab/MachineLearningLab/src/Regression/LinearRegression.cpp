@@ -66,7 +66,7 @@ void LinearRegression::fit(const std::vector<std::vector<double>>& trainData, co
 }
 
 // Function to fit with the GradienDescent method
-void fit(const std::vector<std::vector<double>>& trainData, const std::vector<double>& trainLabels, double learning_rate, int nb_rounds) {
+void LinearRegression::fit(const std::vector<std::vector<double>>& trainData, const std::vector<double>& trainLabels, double learning_rate, int nb_rounds) {
     int num_features = trainData[0].size();
 
     Eigen::VectorXd weights(num_features + 1);
@@ -86,7 +86,7 @@ void fit(const std::vector<std::vector<double>>& trainData, const std::vector<do
             }
             double prediction = 0.0;
             for (int j = 0; j < num_features + 1; j++) {
-                prediction = prediction + weights[j] * x[j];
+                prediction = prediction + weights[j] * x[j];    
             }
             
             double target = trainLabels[i];
