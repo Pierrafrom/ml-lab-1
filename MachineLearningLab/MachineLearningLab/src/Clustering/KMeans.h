@@ -16,8 +16,7 @@ public:
     KMeans(int numClusters, int maxIterations);
     void fit(const std::vector<std::vector<double>>& data);
     std::vector<int> predict(const std::vector<std::vector<double>>& data) const;
-    std::tuple<double, double, std::vector<int>, std::vector<std::vector<double>>>
-        runKMeans(const std::string& filePath);
+    std::tuple<double, double, std::vector<int>, std::vector<std::vector<double>>> runKMeans(const std::string& filePath);
 
 private:
     int numClusters_;
