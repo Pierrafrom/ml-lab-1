@@ -7,16 +7,16 @@ algorithms from scratch in C++, inside a shared WinForms skeleton used
 across every lab of the course. The UI, data loading, and evaluation
 metrics are already implemented.
 
-**Lab 1** (`Lab1_kNN.pdf`) is done — `KNNClassifier::predict()`,
-`KNNRegression::predict()`, and two distance functions in
-`SimilarityFunctions.cpp`. **Current assignment (see `TODO.md` and
-`Lab2_Decision_Tree.pdf`): Lab 2 is Decision Trees only** —
-`DecisionTreeClassification`/`DecisionTreeRegression`
-(`EntropyFunctions::entropy()`, `growTree()`, `informationGain()`,
-`mostCommonlLabel()`, `predict()`, `traverseTree()`, and the regression
-equivalents). Linear/Logistic Regression and Clustering are scaffolding
-for a **future lab with no assignment sheet yet** — don't suggest
-implementing those until told otherwise.
+**Lab 1** (`Lab1_kNN.pdf`, k-NN), **Lab 2** (`Lab2_Decision_Tree.pdf`,
+Decision Trees), and **Lab 3** (`Lab3_Logistics Regression.pdf`, Logistic
+Regression — One-vs-Rest, `LogisticRegression::fit()`/`predict()`) are all
+done. **Current assignment (see `TODO.md` and `Lab4_Linear_Regression.pdf`):
+Lab 4 is Linear Regression only** — `LinearRegression::fit()`/`predict()`,
+implemented **twice via C++ overloading**: once using the Matrix Form
+(normal equation, Eigen) and once using Gradient Descent (same structure
+as `LogisticRegression`, but `h(x) = θᵀx` directly, no sigmoid). Clustering
+is scaffolding for a **future lab with no assignment sheet yet** — don't
+suggest implementing it until told otherwise.
 
 ## Tech stack
 
@@ -44,8 +44,8 @@ implementing those until told otherwise.
 
 ```
 MachineLearningLab/MachineLearningLab/src/
-├── Classification/   # KNNClassifier — Lab 1, done. DecisionTreeClassification — Lab 2, to implement. LogisticRegression — future lab, don't touch yet
-├── Regression/        # KNNRegression — Lab 1, done. DecisionTreeRegression — Lab 2, to implement. LinearRegression — future lab, don't touch yet
+├── Classification/   # KNNClassifier, DecisionTreeClassification, LogisticRegression — Lab 1-3, all done
+├── Regression/        # KNNRegression, DecisionTreeRegression — Lab 1-2, done. LinearRegression — Lab 4, to implement (Matrix Form + Gradient Descent overloads)
 ├── Clustering/         # KMeans, FuzzyCMeans — future lab, don't touch yet
 ├── DataUtils/           # DataLoader, DataPreprocessor — already implemented
 ├── Evaluation/          # Metrics, KFoldCrossValidation — already implemented

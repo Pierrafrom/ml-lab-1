@@ -5,5 +5,7 @@ obj/
 *.user
 *.suo
 *.sdf
+*.zip
 *.opensdf
 ipch/
+enc_temp_folder/

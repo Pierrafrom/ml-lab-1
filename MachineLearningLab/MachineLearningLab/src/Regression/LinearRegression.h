@@ -16,6 +16,7 @@
 class LinearRegression {
 public:
     void fit(const std::vector<std::vector<double>>& trainData, const std::vector<double>& trainLabels);
+	void fit(const std::vector<std::vector<double>>& trainData, const std::vector<double>& trainLabels, double learning_rate, int nb_rounds);
     std::vector<double> predict(const std::vector<std::vector<double>>& testData);
     std::tuple<double, double, double, double, double, double,
         std::vector<double>, std::vector<double>,
@@ -25,6 +26,8 @@ public:
 private:
 
     Eigen::VectorXd m_coefficients; // Store the coefficients for future predictions
+    Eigen::VectorXd m_featureMean;  // mean of the 13 features
+    Eigen::VectorXd m_featureSD;    // sd of the 13 features
 
 };
 

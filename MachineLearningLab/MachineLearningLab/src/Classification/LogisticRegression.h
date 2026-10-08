@@ -14,7 +14,7 @@
 
 class LogisticRegression {
 public:
-    LogisticRegression(double learning_rate = 0.01, int num_epochs = 100);
+    LogisticRegression(double learning_rate = 0.001, int nb_rounds = 1000);  // best: 0.001 / 1000
     void fit(const std::vector<std::vector<double>>& X_train, const std::vector<double>& y_train);
     std::vector<double> predict(const std::vector<std::vector<double>>& X_test);
     std::tuple<double, double,
@@ -24,10 +24,11 @@ public:
 
 private:
     double learning_rate;
-    int num_epochs;
+    int nb_rounds;
     std::vector<std::vector<double>> weights;
+    std::vector<double> class_labels;
 
-    // Sigmoid function
+    // Sigmoid function 
     double sigmoid(double z) {
         return 1.0 / (1.0 + std::exp(-z));
     }

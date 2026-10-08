@@ -1,9 +1,14 @@
-# ML Lab 1 — Machine Learning Algorithms from Scratch
+# ML Lab — Machine Learning Algorithms from Scratch
 
-Mälardalen University (dva262) ML lab: implementing classification,
-regression, and clustering algorithms from scratch in C++, on top of a
-provided WinForms lab skeleton (see `ML_Lab_Project.pdf` for the full
-assignment).
+[![C++](https://img.shields.io/badge/C%2B%2B-C%2B%2FCLI-00599C?logo=cplusplus)](MachineLearningLab/MachineLearningLab.sln)
+[![Eigen](https://img.shields.io/badge/Eigen-3.4.0-informational)](AdditionalLibraries/eigen-3.4.0)
+[![WinForms](https://img.shields.io/badge/UI-WinForms-5C2D91?logo=windows)](MachineLearningLab)
+
+Mälardalen University (DVA262) ML course: implementing classification,
+regression, and clustering algorithms **from scratch in C++** (no
+scikit-learn) on top of a provided WinForms lab skeleton that handles data
+loading, train/test splitting, and metrics — see `ML_Lab_Project.pdf` for
+the full assignment. Pair project with Maceo.
 
 ## Quick start
 
@@ -23,19 +28,24 @@ assignment).
    `BostonHousing.csv` (Regression tab) → set the train/test split → pick an
    algorithm → *Run*.
 
-## What's already done vs. what we implement
+## What's implemented
 
-Full breakdown in `CLAUDE.md`. Short version: the UI, data loading, and
-evaluation metrics are already provided. We implement `fit`/`predict` for:
+The UI, data loading, and evaluation metrics are provided by the skeleton;
+each lab implements the `fit`/`predict` logic of specific algorithms.
 
-- **Classification**: `DecisionTreeClassification`, `KNNClassifier`, `LogisticRegression`
-- **Regression**: `DecisionTreeRegression`, `KNNRegression`, `LinearRegression`
-- **Clustering**: `KMeans`, `FuzzyCMeans`
+| Algorithm | Status |
+|---|---|
+| k-NN (classification + regression) | ✅ implemented, incl. Euclidean/Manhattan distance |
+| Decision Trees (classification + regression) | ✅ implemented, hyperparameters tuned via notebook sweeps |
+| Logistic Regression | ⬜ not yet assigned |
+| Linear Regression | ⬜ not yet assigned |
+| K-Means / Fuzzy C-Means | ⬜ not yet assigned |
 
 Every algorithm class follows the same shape — `fit(X_train, y_train)`,
 `predict(X_test)`, and a `runXxx(filePath, trainingRatio)` orchestration
-method already wired to the UI. Look at any already-implemented method in
-`DataUtils/` or `Evaluation/` for the coding pattern this codebase uses.
+method already wired to the UI. Full breakdown of what's done vs. pending
+per file is in `CLAUDE.md`; hyperparameter exploration for the completed
+algorithms lives in `notebooks/`.
 
 ## Known gotchas already fixed in this repo
 
