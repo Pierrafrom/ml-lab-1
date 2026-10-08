@@ -14,13 +14,13 @@ metrics are already provided.
 
 `ML_Lab_Project.pdf` describes the whole skeleton (all algorithm classes
 it contains, across every lab). **Lab 1** (`Lab1_kNN.pdf`, k-NN),
-**Lab 2** (`Lab2_Decision_Tree.pdf`, Decision Trees), and **Lab 3**
-(`Lab3_Logistics Regression.pdf`, Logistic Regression) are done.
-**Lab 4** (`Lab4_Linear_Regression.pdf`) is the current assignment —
-**Linear Regression only**, one part (regression, `LinearRegression`).
+**Lab 2** (`Lab2_Decision_Tree.pdf`, Decision Trees), **Lab 3**
+(`Lab3_Logistics Regression.pdf`, Logistic Regression) and **Lab 4**
+(`Lab4_Linear_Regression.pdf`, Linear Regression) are done.
 Clustering still belongs to a future lab with no assignment sheet yet —
-don't implement it until a new lab PDF shows up, even though the classes
-and branches already exist.
+don't implement it on `main` until a new lab PDF shows up. Work in
+progress lives on `feat/kmeans` (`KMeans::predict` done) and
+`feat/fuzzy-cmeans` (placeholder).
 
 ## Build
 
@@ -87,13 +87,20 @@ per-example gradient descent — not the batch-averaged form the course
 notes describe, see `notebooks/` discussion). Defaults tuned:
 `learning_rate=0.001`, `nb_rounds=1000` (was `0.01`/`100`).
 
-**To implement now (Lab 4 — see `TODO.md` for the exact task numbers)**:
-- `LinearRegression`: currently only one `fit()`/`predict()` pair exists
-  (Matrix Form via Eigen, `m_coefficients`), both still stubbed. Task 2
-  requires **adding a second, overloaded** `fit()`/`predict()` pair for
-  Gradient Descent — a new member (`learning_rate`/`num_epochs`, same
-  pattern as `LogisticRegression`) needs to be added too, not just filled
-  in.
+**Done (Lab 4 — Linear Regression)**: `LinearRegression` has two `fit()`
+overloads storing into the same `m_coefficients`, and one shared
+`predict()`:
+- `fit(trainData, trainLabels)` — Matrix Form (normal equation via Eigen),
+  works on raw features.
+- `fit(trainData, trainLabels, learning_rate, nb_rounds)` — per-example
+  gradient descent on **standardized** features (mean/SD stored in
+  `m_featureMean`/`m_featureSD`; without standardization it diverges on
+  Boston Housing). Best values: `0.0005` / `100` (see section 7 of
+  `notebooks/boston_housing_exploration.ipynb`).
+- `predict()` standardizes the test data only when `m_featureSD` is set
+  (i.e. after a gradient descent fit). The Matrix Form `fit` clears it.
+- `runLinearRegression(filePath, ratio, Method)` picks the variant; the
+  Regression tab lists both ("Matrix Form" / "Gradient Descent").
 
 **Not part of the current lab — skeletons only, don't touch until assigned**:
 `KMeans`, `FuzzyCMeans`.

@@ -28,6 +28,11 @@ using namespace System::Windows::Forms; // For MessageBox
 
 										///  LinearRegression class implementation  ///
 
+// Best gradient descent hyperparameters found on Boston Housing with standardized features
+// (see the Lab 4 section of notebooks/boston_housing_exploration.ipynb): test R2 ~0.66, same as Matrix Form.
+static constexpr double GRADIENT_DESCENT_LEARNING_RATE = 0.0005;
+static constexpr int GRADIENT_DESCENT_ROUNDS = 100;
+
 
 // Function to fit the linear regression model to the training data //
 void LinearRegression::fit(const std::vector<std::vector<double>>& trainData, const std::vector<double>& trainLabels) {
@@ -45,6 +50,11 @@ void LinearRegression::fit(const std::vector<std::vector<double>>& trainData, co
 	if (trainData.size() != trainLabels.size()) {
 		throw std::invalid_argument("Size of trainData and trainLabels must match.");
 	}
+
+	// Coefficients are learned on raw features: drop any standardization left by a previous gradient descent fit,
+	// otherwise predict() would standardize the test data and misuse these coefficients.
+	m_featureMean.resize(0);
+	m_featureSD.resize(0);
 
     // création de la matrice avec une colonne de biais à 1
 	Eigen::MatrixXd X(static_cast<int>(trainData.size()), static_cast<int>(trainData[0].size() + 1));
@@ -67,6 +77,10 @@ void LinearRegression::fit(const std::vector<std::vector<double>>& trainData, co
 
 // Function to fit with the GradienDescent method
 void LinearRegression::fit(const std::vector<std::vector<double>>& trainData, const std::vector<double>& trainLabels, double learning_rate, int nb_rounds) {
+    if (trainData.size() != trainLabels.size()) {
+        throw std::invalid_argument("Size of trainData and trainLabels must match.");
+    }
+
     int num_features = trainData[0].size();
     int n = trainData.size();
     m_featureMean = Eigen::VectorXd(num_features); //init the size at 13
@@ -131,7 +145,8 @@ void LinearRegression::fit(const std::vector<std::vector<double>>& trainData, co
 // Function to make predictions on new data //
 std::vector<double> LinearRegression::predict(const std::vector<std::vector<double>>& testData) {
 
-	// This implementation is using Matrix Form method    
+	// Shared by both fit() overloads: they all store their result in m_coefficients.
+	// Gradient descent coefficients live in standardized space, so test data is standardized the same way.
     /* Implement the following
 		--- Check if the model has been fitted
 		--- Convert testData to matrix representation
@@ -180,7 +195,7 @@ std::vector<double> LinearRegression::predict(const std::vector<std::vector<doub
 std::tuple<double, double, double, double, double, double,
     std::vector<double>, std::vector<double>,
     std::vector<double>, std::vector<double>>
-    LinearRegression::runLinearRegression(const std::string& filePath, int trainingRatio) {
+    LinearRegression::runLinearRegression(const std::string& filePath, int trainingRatio, Method method) {
     try {
         // Check if the file path is empty
         if (filePath.empty()) {
@@ -233,7 +248,12 @@ std::tuple<double, double, double, double, double, double,
         DataPreprocessor::splitDataset(dataset, trainRatio, trainData, trainLabels, testData, testLabels);
 
         // Fit the model to the training data
-        fit(trainData, trainLabels, 0.0005, 100); // avec 0.0005 et 100 on a un peu mieux qu'avec le premier fit
+        if (method == Method::MatrixForm) {
+            fit(trainData, trainLabels);
+        }
+        else {
+            fit(trainData, trainLabels, GRADIENT_DESCENT_LEARNING_RATE, GRADIENT_DESCENT_ROUNDS);
+        }
 
         // Make predictions on the test data
         std::vector<double> testPredictions = predict(testData);

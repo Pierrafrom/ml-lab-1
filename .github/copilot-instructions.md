@@ -8,15 +8,14 @@ across every lab of the course. The UI, data loading, and evaluation
 metrics are already implemented.
 
 **Lab 1** (`Lab1_kNN.pdf`, k-NN), **Lab 2** (`Lab2_Decision_Tree.pdf`,
-Decision Trees), and **Lab 3** (`Lab3_Logistics Regression.pdf`, Logistic
-Regression — One-vs-Rest, `LogisticRegression::fit()`/`predict()`) are all
-done. **Current assignment (see `TODO.md` and `Lab4_Linear_Regression.pdf`):
-Lab 4 is Linear Regression only** — `LinearRegression::fit()`/`predict()`,
-implemented **twice via C++ overloading**: once using the Matrix Form
-(normal equation, Eigen) and once using Gradient Descent (same structure
-as `LogisticRegression`, but `h(x) = θᵀx` directly, no sigmoid). Clustering
-is scaffolding for a **future lab with no assignment sheet yet** — don't
-suggest implementing it until told otherwise.
+Decision Trees), **Lab 3** (`Lab3_Logistics Regression.pdf`, Logistic
+Regression — One-vs-Rest) and **Lab 4** (`Lab4_Linear_Regression.pdf`,
+Linear Regression) are all done. `LinearRegression::fit()` is implemented
+**twice via C++ overloading**: Matrix Form (normal equation, Eigen) and
+Gradient Descent (same structure as `LogisticRegression`, but `h(x) = θᵀx`
+directly, no sigmoid, on standardized features), sharing one `predict()`.
+Clustering is scaffolding for a **future lab with no assignment sheet
+yet** — don't suggest implementing it on `main` until told otherwise.
 
 ## Tech stack
 
@@ -45,7 +44,7 @@ suggest implementing it until told otherwise.
 ```
 MachineLearningLab/MachineLearningLab/src/
 ├── Classification/   # KNNClassifier, DecisionTreeClassification, LogisticRegression — Lab 1-3, all done
-├── Regression/        # KNNRegression, DecisionTreeRegression — Lab 1-2, done. LinearRegression — Lab 4, to implement (Matrix Form + Gradient Descent overloads)
+├── Regression/        # KNNRegression, DecisionTreeRegression — Lab 1-2, done. LinearRegression — Lab 4, done (Matrix Form + Gradient Descent overloads)
 ├── Clustering/         # KMeans, FuzzyCMeans — future lab, don't touch yet
 ├── DataUtils/           # DataLoader, DataPreprocessor — already implemented
 ├── Evaluation/          # Metrics, KFoldCrossValidation — already implemented

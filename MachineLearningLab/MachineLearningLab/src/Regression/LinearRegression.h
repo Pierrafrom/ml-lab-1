@@ -15,13 +15,16 @@
 
 class LinearRegression {
 public:
+    // Which of the two fit() overloads runLinearRegression() uses.
+    enum class Method { MatrixForm, GradientDescent };
+
     void fit(const std::vector<std::vector<double>>& trainData, const std::vector<double>& trainLabels);
 	void fit(const std::vector<std::vector<double>>& trainData, const std::vector<double>& trainLabels, double learning_rate, int nb_rounds);
     std::vector<double> predict(const std::vector<std::vector<double>>& testData);
     std::tuple<double, double, double, double, double, double,
         std::vector<double>, std::vector<double>,
         std::vector<double>, std::vector<double>>
-        runLinearRegression(const std::string& filePath, int trainingRatio);
+        runLinearRegression(const std::string& filePath, int trainingRatio, Method method = Method::GradientDescent);
 
 private:
 
