@@ -49,18 +49,31 @@ void KMeans::fit(const std::vector<std::vector<double>>& data) {
 //// predict function: Calculates the closest centroid for each point in the given data set and returns the labels of the closest centroids.//
 std::vector<int> KMeans::predict(const std::vector<std::vector<double>>& data) const {
 	std::vector<int> labels;
-	labels.reserve(data.size());
-	
-	/* Implement the following:
-		--- Initialize the closest centroid and minimum distance to the maximum possible value
-		--- Iterate through each centroid
-		--- Calculate the Euclidean distance between the point and the centroid
-		--- Add the closest centroid to the labels vector
-    */
-	
-	// TODO
-	return labels; // Return the labels vector
+	labels.reserve(data.size()); // un label par point de données
 
+	// Pour chaque point de données
+	for (const auto& point : data) {
+		// Étape 1 : Initialiser la distance minimale et le centroïde le plus proche
+		double minDistance = std::numeric_limits<double>::max();
+		int closestCentroid = 0; // par défaut, le premier centroïde est le plus proche
+
+		// Étape 2 : Itérer à travers tous les centroïdes
+		for (size_t i = 0; i < centroids_.size(); ++i) {
+			// Étape 3 : Calculer la distance euclidienne entre le point et le centroïde actuel
+			double distance = SimilarityFunctions::euclideanDistance(point, centroids_[i]);
+
+			// Étape 4 : Mettre à jour le centroïde le plus proche si une distance plus petite est trouvée
+			if (distance < minDistance) {
+				minDistance = distance;
+				closestCentroid = static_cast<int>(i);
+			}
+		}
+
+		// Étape 5 : Ajouter l'étiquette du centroïde le plus proche au vecteur de résultats
+		labels.push_back(closestCentroid);
+	}
+
+	return labels;
 }
 
 
