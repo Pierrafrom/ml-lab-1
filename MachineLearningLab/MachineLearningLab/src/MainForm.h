@@ -1051,14 +1051,14 @@ private: System::Windows::Forms::TableLayoutPanel^ tableLayoutPanel1;
 			// 
 			this->regressionAlgorithmListBox->FormattingEnabled = true;
 			this->regressionAlgorithmListBox->ItemHeight = 20;
-			this->regressionAlgorithmListBox->Items->AddRange(gcnew cli::array< System::Object^  >(3) {
-				L"KNN Regression", L"Linear Regression",
-					L"Decision Tree Regression"
+			this->regressionAlgorithmListBox->Items->AddRange(gcnew cli::array< System::Object^  >(4) {
+				L"KNN Regression", L"Linear Regression (Matrix Form)",
+					L"Linear Regression (Gradient Descent)", L"Decision Tree Regression"
 			});
 			this->regressionAlgorithmListBox->Location = System::Drawing::Point(1256, 353);
 			this->regressionAlgorithmListBox->Margin = System::Windows::Forms::Padding(3, 2, 3, 2);
 			this->regressionAlgorithmListBox->Name = L"regressionAlgorithmListBox";
-			this->regressionAlgorithmListBox->Size = System::Drawing::Size(269, 64);
+			this->regressionAlgorithmListBox->Size = System::Drawing::Size(269, 84);
 			this->regressionAlgorithmListBox->TabIndex = 8;
 			// 
 			// regressionSelectAlgorithmLabel
@@ -1485,15 +1485,18 @@ private: System::Windows::Forms::TableLayoutPanel^ tableLayoutPanel1;
 				}
 
 			}
-			else if (algorithmIndex == 1) {
+			else if (algorithmIndex == 1 || algorithmIndex == 2) {
 				if (value1 != -1) {
-					// running the linear regression
+					// running the linear regression (1 = Matrix Form, 2 = Gradient Descent)
 
 					LinearRegression LR;
+					LinearRegression::Method method = (algorithmIndex == 1)
+						? LinearRegression::Method::MatrixForm
+						: LinearRegression::Method::GradientDescent;
 
 					// Evaluation //
 
-					auto resultTuple = LR.runLinearRegression(filePath, value1);
+					auto resultTuple = LR.runLinearRegression(filePath, value1, method);
 
 					// Unpack the results from the tuple
 					double test_mae, test_rmse, test_rsquared, train_mae, train_rmse, train_rsquared;
@@ -1522,7 +1525,7 @@ private: System::Windows::Forms::TableLayoutPanel^ tableLayoutPanel1;
 				}
 	
 			}
-			else if (algorithmIndex == 2) {
+			else if (algorithmIndex == 3) {
 				if (value1 != -1) {
 					// //Decision Tree Regression //
 					
