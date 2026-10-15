@@ -9,8 +9,9 @@
 #include <utility>
 #include <cmath>
 #include <algorithm>
+#include <numeric>
 #include <limits>
-#include <random> 
+#include <random>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -28,44 +29,123 @@ KMeans::KMeans(int numClusters, int maxIterations)
 
 // fit function: Performs K-means clustering on the given dataset and return the centroids of the clusters.//
 void KMeans::fit(const std::vector<std::vector<double>>& data) {
-	// Create a copy of the data to preserve the original dataset
-	std::vector<std::vector<double>> normalizedData = data;
+	// Étape 0 : Vérifier que le dataset n'est pas vide
+	if (data.empty() || numClusters_ <= 0 || numClusters_ > static_cast<int>(data.size())) {
+		return;
+	}
 
-	/* Implement the following:
-		---	Initialize centroids randomly
-		--- Randomly select unique centroid indices
-		---	Perform K-means clustering
-		--- Assign data points to the nearest centroid
-		--- Calculate the Euclidean distance between the point and the current centroid
-		--- Update newCentroids and clusterCounts
-		--- Update centroids
-		---  Check for convergence
-	*/
-	
-	// TODO
+	// Étape 1 : Initialiser les centroïdes aléatoirement
+	// Créer un vecteur d'indices [0, 1, 2, ..., N-1]
+	std::vector<int> indices(data.size());
+	std::iota(indices.begin(), indices.end(), 0);
+
+	// Mélanger les indices aléatoirement
+	std::random_device rd;
+	std::shuffle(indices.begin(), indices.end(), std::mt19937(rd()));
+
+	// Sélectionner les numClusters_ premiers indices (qui sont maintenant aléatoires)
+	centroids_.clear();
+	for (int i = 0; i < numClusters_; ++i) {
+		centroids_.push_back(data[indices[i]]);
+	}
+
+	// Étape 2 : Itérer pour trouver les centroïdes optimaux
+	for (int iteration = 0; iteration < maxIterations_; ++iteration) {
+		// Étape 2a : Initialiser les nouveaux centroïdes et les compteurs
+		std::vector<std::vector<double>> newCentroids(numClusters_, std::vector<double>(data[0].size(), 0.0));
+		std::vector<int> clusterCounts(numClusters_, 0);
+
+		// Etape 2b : Assigner chaque point de donnees au centroide le plus proche
+		for (const auto& point : data) {
+			// Initialiser la distance minimale et le centroide le plus proche
+			double minDistance = (std::numeric_limits<double>::max)();
+			int closestCentroid = 0;
+
+			// Iterer a travers tous les centroïdes
+			for (size_t i = 0; i < centroids_.size(); ++i) {
+				// Calculer la distance euclidienne entre le point et le centroide actuel
+				double distance = SimilarityFunctions::euclideanDistance(point, centroids_[i]);
+
+				// Mettre a jour le centroide le plus proche si une distance plus petite est trouvee
+				if (distance < minDistance) {
+					minDistance = distance;
+					closestCentroid = static_cast<int>(i);
+				}
+			}
+
+			// Ajouter le point au cluster correspondant (pour recalculer le centroide)
+			for (size_t j = 0; j < point.size(); ++j) {
+				newCentroids[closestCentroid][j] += point[j];
+			}
+			clusterCounts[closestCentroid]++;
+		}
+
+		// Etape 2c : Recalculer les centroïdes comme la moyenne des points de chaque cluster
+		bool hasConverged = true;
+		for (int i = 0; i < numClusters_; ++i) {
+			if (clusterCounts[i] > 0) {
+				// Calculer la moyenne des points du cluster
+				for (size_t j = 0; j < newCentroids[i].size(); ++j) {
+					newCentroids[i][j] /= clusterCounts[i];
+				}
+
+				// Verifier la convergence : comparer anciens et nouveaux centroïdes
+				// Calcule la distance entre l'ANCIEN centroide et le NOUVEAU centroide
+				double centroidChange = SimilarityFunctions::euclideanDistance(centroids_[i], newCentroids[i]);
+
+				// Si cette distance est GRANDE (> 1e-6), le centroide a beaucoup change
+				// Donc l'algorithme n'a pas converged -> continue
+				if (centroidChange > 1e-6) {
+					hasConverged = false;
+				}
+			}
+			else {
+				// Cluster vide : on garde l'ancien centroide (sinon il partirait a l'origine)
+				newCentroids[i] = centroids_[i];
+			}
+		}
+
+		// Etape 2d : Mettre a jour les centroïdes
+		centroids_ = newCentroids;
+
+		// Etape 2e : Verifier la convergence et arreter si atteinte
+		// Si TOUS les centroïdes ont bouge de moins de 1e-6, on a trouve la stabilite
+		if (hasConverged) {
+			break;  // Les centroïdes ne changent plus, arreter l'iteration
+		}
+	}
 }
 
 
 //// predict function: Calculates the closest centroid for each point in the given data set and returns the labels of the closest centroids.//
 std::vector<int> KMeans::predict(const std::vector<std::vector<double>>& data) const {
 	std::vector<int> labels;
-	labels.reserve(data.size());
-	
-	/* Implement the following:
-		--- Initialize the closest centroid and minimum distance to the maximum possible value
-		--- Iterate through each centroid
-		--- Calculate the Euclidean distance between the point and the centroid
-		--- Add the closest centroid to the labels vector
-    */
-	
-	// TODO
-	return labels; // Return the labels vector
+	labels.reserve(data.size()); // un label par point de données
 
+	// Pour chaque point de données
+	for (const auto& point : data) {
+		// Etape 1 : Initialiser la distance minimale et le centroide le plus proche
+		double minDistance = (std::numeric_limits<double>::max)();
+		int closestCentroid = 0; // par défaut, le premier centroide est le plus proche
+
+		// Etape 2 : Itérer à travers tous les centroïdes
+		for (size_t i = 0; i < centroids_.size(); ++i) {
+			// Étape 3 : Calculer la distance euclidienne entre le point et le centroïde actuel
+			double distance = SimilarityFunctions::euclideanDistance(point, centroids_[i]);
+
+			// Étape 4 : Mettre à jour le centroïde le plus proche si une distance plus petite est trouvée
+			if (distance < minDistance) {
+				minDistance = distance;
+				closestCentroid = static_cast<int>(i);
+			}
+		}
+
+		// Étape 5 : Ajouter l'étiquette du centroïde le plus proche au vecteur de résultats
+		labels.push_back(closestCentroid);
+	}
+
+	return labels;
 }
-
-
-
-
 
 /// runKMeans: this function runs the KMeans clustering algorithm on the given dataset and 
 /// then returns a tuple containing the evaluation metrics for the training and test sets, 
